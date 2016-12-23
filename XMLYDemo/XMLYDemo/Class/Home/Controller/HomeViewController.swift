@@ -11,7 +11,7 @@ import UIKit
 class HomeViewController: BaseViewController {
 
     // MARK:- 懒加载
-    
+    private lazy var homeVM : HomeTitleVM = HomeTitleVM()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,10 +52,13 @@ extension HomeViewController {
         let style = STPageViewStyle()
         style.titleViewHeight = 44
         style.isShowScrollLine = true
-        
-        let pageView = STPageView(frame: rect, titles: ["推荐","热门","分类","榜单","主播"], childsVC: childsVC, parentVC: self, style: style)
-        
-        view.addSubview(pageView)
+        homeVM.getTitlesData {[weak self] in
+            let titles = self!.homeVM.titles.map({$0.title})
+            print(titles)
+            let pageView = STPageView(frame: rect, titles: titles, childsVC: childsVC, parentVC: self!, style: style)
+            
+            self?.view.addSubview(pageView)
+        }
     }
 }
 

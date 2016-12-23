@@ -47,7 +47,6 @@ class STSearchButton: UIButton {
     override func layoutSubviews() {
         super.layoutSubviews()
         let font = placeHoldLabel.font
-        print(font.lineHeight)
         searchIconImageView.frame = CGRect(x: 5, y: 0, width: font.lineHeight, height: font.lineHeight)
         searchIconImageView.center = CGPoint(x: font.lineHeight, y: bounds.size.height * 0.5)
         placeHoldLabel.frame = CGRect(x: CGRectGetMaxX(searchIconImageView.frame) + 5, y: 0, width: bounds.width - CGRectGetMaxX(searchIconImageView.frame) - 5, height: bounds.height)

@@ -71,7 +71,6 @@ class STTabBar: UIView {
             }
             button.frame = CGRect(x: buttonX, y: buttonY, width: buttonWidth, height: buttonHeight)
             
-            print(button.frame)
         }
     }
     
