@@ -43,7 +43,7 @@ class GuessYouLikeCell: UICollectionViewCell {
         
         iconImageView.snp.makeConstraints { (make) in
             make.left.top.right.equalTo(contentView)
-            make.height.equalTo(contentView.snp.width)
+            make.height.width.equalTo(contentView.snp.width)
             
         }
         

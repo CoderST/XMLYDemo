@@ -52,7 +52,6 @@ class  HotSubModel: BaseModel {
                 }
             }
         }else{
-            print("key = \(key)")
             if key == "description"{
                 if let des = value as? String{
                     mydescription = des

@@ -10,14 +10,6 @@ import UIKit
 
 class AnchorNormalCell: UICollectionViewCell {
     
-    fileprivate lazy var bottomView : UIView = {
-        
-        let bottomView = UIView()
-        bottomView.backgroundColor = UIColor.white
-        return bottomView
-        
-    }()
-    
     fileprivate lazy var bottomImageView : UIImageView = {
         
         let bottomImageView = UIImageView()
@@ -31,7 +23,6 @@ class AnchorNormalCell: UICollectionViewCell {
     fileprivate lazy var iconImageView : UIImageView = {
         
         let iconImageView = UIImageView()
-        iconImageView.backgroundColor = UIColor.blue
         iconImageView.layer.borderWidth = 1
         iconImageView.layer.borderColor = UIColor.gray.cgColor
         iconImageView.backgroundColor = UIColor.purple
@@ -63,7 +54,8 @@ class AnchorNormalCell: UICollectionViewCell {
     var anchorModel : AnchorSectionList?{
         didSet{
             titleLabel.text = anchorModel?.nickname ?? ""
-            detailLabel.text = anchorModel?.verifyTitle ?? ""
+            let text = anchorModel?.verifyTitle == "" ? anchorModel?.personDescribe : anchorModel?.verifyTitle
+            detailLabel.text = text
             iconImageView.sd_setImage(with: URL(string: anchorModel?.largeLogo ?? ""), placeholderImage: UIImage(named: "find_radio_default"))
         }
     }
@@ -87,16 +79,16 @@ class AnchorNormalCell: UICollectionViewCell {
         
         bottomImageView.snp.makeConstraints { (make) in
             make.top.equalTo(contentView)
-            make.left.equalTo(contentView)
-            make.width.equalTo(contentView.bounds.width )
-            make.bottom.equalTo(detailLabel.snp.top).offset(-10)
+            make.left.equalTo(contentView).offset(5)
+            make.width.equalTo(contentView.frame.width)
+            make.bottom.equalTo(detailLabel.snp.top)
 
         }
         
         iconImageView.snp.makeConstraints { (make) in
             make.top.equalTo(bottomImageView.snp.top).offset(5)
             make.centerX.equalTo(bottomImageView)
-            make.width.height.equalTo(bottomImageView.snp.width).offset(-10)
+            make.width.height.equalTo(bottomImageView.snp.width).offset(-25)
         }
         
         

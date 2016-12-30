@@ -40,10 +40,6 @@ class MainTabBarController: UITabBarController {
         }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        print("mmmmmmmm",tabBar.subviews)
-    }
     
 }
 

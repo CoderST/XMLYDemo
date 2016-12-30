@@ -140,6 +140,7 @@ extension PopularViewModel {
             // 推广
             
             if let tuiguangCount = self.tuiGuangModels.first?.list.count{
+                self.indexTuiGuang = 0
                 for index in 0..<tuiguangCount{
                     self.insertData((index + 1) * 6, object: [HotMainModel](),title: "推广")
                 }
@@ -159,7 +160,10 @@ extension PopularViewModel {
             tempModel.tuiGuangIndex = index
             tempModel.title = title
             tempModel.list.append(tuiguangSub)
-            indexTuiGuang += 1
+            if indexTuiGuang < tuiGuangModels.first!.list.count{
+                
+                indexTuiGuang += 1
+            }
             self.popularModels.insert(tempModel, at: index)
             
         }else if title == "现场直播"{  // 此处只用于展示界面  真是使用数据用xianChagnZhiBoModels里的真是数据

@@ -49,5 +49,4 @@ class MainNavigationController: UINavigationController {
         
         popViewController(animated: true)
     }
-
 }

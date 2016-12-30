@@ -22,7 +22,17 @@ class HomeViewController: BaseViewController {
         setupUI()
     }
 
-
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // 隐藏底部线
+        navigationController?.navigationBar.hideBottomHairline()
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // 显示底部线
+        navigationController?.navigationBar.showBottomHairline()
+    }
+    
 }
 
 extension HomeViewController {

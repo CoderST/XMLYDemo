@@ -31,7 +31,7 @@ class AnchorViewController: UIViewController {
         
         setupUI()
         
-        getAnchorData()
+//        getAnchorData()
     }
 
 }
@@ -71,9 +71,18 @@ extension AnchorViewController {
         // 注册歌手cell
         collectionView.register(AnchorSignerCell.self, forCellWithReuseIdentifier: AnchorSignerCellIdentifier)
         
-        // 注册普通cell
         view.addSubview(collectionView)
         
+        // 添加刷新
+        collectionView.mj_header = STRefreshHeader(refreshingTarget: self, refreshingAction: #selector(refreshHeaderAction))
+        collectionView.mj_header.beginRefreshing()
+    }
+}
+
+// MARK:- 刷新相关
+extension AnchorViewController {
+    func refreshHeaderAction() {
+        getAnchorData()
     }
 }
 
@@ -83,6 +92,7 @@ extension AnchorViewController {
     fileprivate func getAnchorData() {
         anchorVM.getAnchorData { 
             self.collectionView.reloadData()
+            self.collectionView.mj_header.endRefreshing()
         }
     }
 }
@@ -110,8 +120,7 @@ extension AnchorViewController : UICollectionViewDataSource {
         
         if model.displayStyle == 2{    // 歌手
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AnchorSignerCellIdentifier, for: indexPath) as! AnchorSignerCell
-            cell.contentView.backgroundColor = UIColor.randomColor()
-//            cell?.model = modelDetail
+            cell.singerModel = modelDetail
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AnchorNormalCellIdentifier, for: indexPath) as! AnchorNormalCell
@@ -143,7 +152,8 @@ extension AnchorViewController : UICollectionViewDelegate,UICollectionViewDelega
         if kind == UICollectionElementKindSectionHeader{
             
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HeadReusableViewIdentifier, for: indexPath) as!ListHeadReusableView
-            //        headerView.title = listVM.listModelArray[indexPath.section].title
+            let model = anchorVM.anchorSections[indexPath.section]
+                    headerView.title = model.title
             return headerView
         }else {
             

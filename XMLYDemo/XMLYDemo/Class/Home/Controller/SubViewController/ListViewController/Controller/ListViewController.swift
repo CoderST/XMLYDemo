@@ -22,14 +22,7 @@ class ListViewController: UIViewController {
         super.viewDidLoad()
         
         setupUI()
-        listVM.getlistData {
-            
-            if let model = self.listVM.focusModelArray.first{
-                
-                self.focusView.focusModel = model
-            }
-            self.collectionView.reloadData()
-        }
+//        getListVCDate()
     }
     
     
@@ -46,6 +39,11 @@ extension ListViewController {
         setupFocusView()
         // 3 设置collectionView间距
         collectionView.contentInset = UIEdgeInsets(top: headCellHeight, left: 0, bottom: 0, right: 0)
+        // 4 设置刷新
+        let refresh = STRefreshHeader(refreshingTarget: self, refreshingAction: #selector(refreshHeaderAction))
+        collectionView.mj_header = refresh
+        refresh!.ignoredScrollViewContentInsetTop = headCellHeight
+        collectionView.mj_header.beginRefreshing()
         
     }
     
@@ -84,6 +82,28 @@ extension ListViewController {
     }
 }
 
+// MARK:- 刷新相关
+extension ListViewController {
+    func refreshHeaderAction() {
+        getListVCDate()
+    }
+}
+
+extension ListViewController {
+    
+    fileprivate func getListVCDate() {
+        
+        listVM.getlistData {
+            
+            if let model = self.listVM.focusModelArray.first{
+                
+                self.focusView.focusModel = model
+            }
+            self.collectionView.reloadData()
+            self.collectionView.mj_header.endRefreshing()
+        }
+    }
+}
 
 extension ListViewController : UICollectionViewDataSource {
     

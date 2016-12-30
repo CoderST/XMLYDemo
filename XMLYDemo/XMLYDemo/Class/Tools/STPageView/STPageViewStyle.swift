@@ -16,7 +16,7 @@ class STPageViewStyle {
      // titleView高度
     var titleViewHeight : CGFloat = 44
     // 标题普通状态下的文字
-    var normalColor : UIColor = UIColor(r: 12, g: 45, b: 222)
+    var normalColor : UIColor = UIColor(r: 0, g: 0, b: 0)
     // 标题选中状态下的文字
     var selectColor : UIColor = UIColor(r: 255, g: 127, b: 0)
     // 标题的字体大小

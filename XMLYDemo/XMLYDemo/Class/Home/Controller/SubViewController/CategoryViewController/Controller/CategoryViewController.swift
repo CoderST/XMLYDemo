@@ -15,18 +15,15 @@ class CategoryViewController: UIViewController {
     fileprivate var collectionView : UICollectionView!
 
     // MARK:- 懒加载
-    fileprivate var categoryVM : CategoryViewModel = CategoryViewModel()
+    fileprivate lazy var categoryVM : CategoryViewModel = CategoryViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupUI()
         
-        categoryVM.getCategoryData { 
-            
-            self.collectionView.reloadData()
-        }
-        
+//        getCategoryData()
+
     }
 
 }
@@ -54,10 +51,30 @@ extension CategoryViewController {
         
         // 注册普通cell
         view.addSubview(collectionView)
+        
+        //  设置刷新
+        collectionView.mj_header = STRefreshHeader(refreshingTarget: self, refreshingAction: #selector(refreshHeaderAction))
+        collectionView.mj_header.beginRefreshing()
 
     }
 }
-
+// MARK:- 网络请求
+extension CategoryViewController {
+    
+    fileprivate func getCategoryData() {
+        categoryVM.getCategoryData {
+            
+            self.collectionView.reloadData()
+            self.collectionView.mj_header.endRefreshing()
+        }
+    }
+}
+// MARK:- 刷新相关
+extension CategoryViewController {
+    func refreshHeaderAction() {
+        getCategoryData()
+    }
+}
 
 extension CategoryViewController : UICollectionViewDataSource {
     

@@ -46,7 +46,7 @@ class PopularViewController: UIViewController {
         // 1 设置UI
         setupUI()
         // 2 网络请求
-        getData()
+//        getPopularData()
         
         
     }
@@ -98,6 +98,12 @@ extension PopularViewController {
         // 注册推广 PromotionCell
         collectionView.register(PromotionCell.self, forCellWithReuseIdentifier: promotionCellIdentifier)
         view.addSubview(collectionView)
+        
+        //  设置刷新
+        let refresh = STRefreshHeader(refreshingTarget: self, refreshingAction: #selector(refreshHeaderAction))
+        collectionView.mj_header = refresh
+        refresh!.ignoredScrollViewContentInsetTop = sRotationMapViewHeight + sRecommendHeight
+        collectionView.mj_header.beginRefreshing()
     }
     
     fileprivate func setupRotationMapView() {
@@ -115,16 +121,22 @@ extension PopularViewController {
 
 // MARK:- 获取网络数据
 extension PopularViewController {
-    func getData() {
+    func getPopularData() {
         popularViewModel.getData {
-            self.rotationMapView.focusImagesItems = self.popularViewModel.rotationMapModels
-            self.recommendView.discoveryColumns = self.popularViewModel.discoveryColumnsSubItem
-            
+//            self.rotationMapView.focusImagesItems = self.popularViewModel.rotationMapModels
+//            self.recommendView.discoveryColumns = self.popularViewModel.discoveryColumnsSubItem
             self.collectionView.reloadData()
+            self.collectionView.mj_header.endRefreshing()
         }
     }
 }
 
+// MARK:- 刷新相关
+extension PopularViewController {
+    func refreshHeaderAction() {
+        getPopularData()
+    }
+}
 
 extension PopularViewController : UICollectionViewDataSource {
     
