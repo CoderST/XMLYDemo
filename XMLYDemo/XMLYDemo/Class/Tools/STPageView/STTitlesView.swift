@@ -8,11 +8,11 @@
 
 import UIKit
 protocol STTitlesViewDelegate : class{
-    func stTitlesView(stTitlesView : STTitlesView, toIndex : Int)
+    func stTitlesView(_ stTitlesView : STTitlesView, toIndex : Int)
 }
 class STTitlesView: UIView {
     // 手势数组
-    private var tapGestArray : [UITapGestureRecognizer] = [UITapGestureRecognizer]()
+    fileprivate var tapGestArray : [UITapGestureRecognizer] = [UITapGestureRecognizer]()
     // MARK:- 变量
     var currentIndex : Int = 0
     
@@ -23,10 +23,10 @@ class STTitlesView: UIView {
     weak var delegate : STTitlesViewDelegate?
     
     // MARK:- 懒加载
-    private lazy var labelArray : [UILabel] = [UILabel]()
+    fileprivate lazy var labelArray : [UILabel] = [UILabel]()
     
     /// UIScrollView
-    private lazy var scrollView : UIScrollView = {
+    fileprivate lazy var scrollView : UIScrollView = {
         let scrollView = UIScrollView(frame: self.bounds)
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
@@ -35,7 +35,7 @@ class STTitlesView: UIView {
     }()
     
     /// 底部滚动条
-    private lazy var bottomLine : UIView = {
+    fileprivate lazy var bottomLine : UIView = {
         let bottomLine = UIView()
         bottomLine.backgroundColor = self.style.bottomLineColor
 //        bottomLine.frame.size.height = self.style.scrollLineHeight
@@ -44,16 +44,16 @@ class STTitlesView: UIView {
         
     }()
     /// 遮盖
-    private lazy var coverView : UIView = {
+    fileprivate lazy var coverView : UIView = {
         let coverView = UIView()
-        coverView.backgroundColor = UIColor.grayColor().colorWithAlphaComponent(0.7)
+        coverView.backgroundColor = UIColor.gray.withAlphaComponent(0.7)
         return coverView
     }()
     
     // MARK: 计算属性
-    private lazy var normalColorRGB : (r : CGFloat, g : CGFloat, b : CGFloat) = self.getRGBWithColor(self.style.normalColor)
+    fileprivate lazy var normalColorRGB : (r : CGFloat, g : CGFloat, b : CGFloat) = self.getRGBWithColor(self.style.normalColor)
     
-    private lazy var selectedColorRGB : (r : CGFloat, g : CGFloat, b : CGFloat) = self.getRGBWithColor(self.style.selectColor)
+    fileprivate lazy var selectedColorRGB : (r : CGFloat, g : CGFloat, b : CGFloat) = self.getRGBWithColor(self.style.selectColor)
 
     
     // MARK:- 自定义构造函数
@@ -65,23 +65,23 @@ class STTitlesView: UIView {
         setupUI()
         
         // 判断本地是否有用户点击menuType记录
-        guard let cacheIndex = STNSUserDefaults.objectForKey(HOMETYPE) as? Int else { return }
+        guard let cacheIndex = STNSUserDefaults.object(forKey: HOMETYPE) as? Int else { return }
         enumerateIndex(cacheIndex)
         
         // 监听选中menuType的事件
-        STNSNotificationCenter.addObserver(self, selector: "didSelectedMenuTypeClick:", name: DIDSELECTED_MENUM_TYPE, object: nil)
+        STNSNotificationCenter.addObserver(self, selector: #selector(STTitlesView.didSelectedMenuTypeClick(_:)), name: NSNotification.Name(rawValue: DIDSELECTED_MENUM_TYPE), object: nil)
         
         
     }
     
     
-    func didSelectedMenuTypeClick(notic : NSNotification){
+    func didSelectedMenuTypeClick(_ notic : Notification){
         guard let index = notic.object as? Int else { return }
         enumerateIndex(index)
     }
     
-    func enumerateIndex(index : Int){
-        for (_,label) in labelArray.enumerate(){
+    func enumerateIndex(_ index : Int){
+        for (_,label) in labelArray.enumerated(){
             if label.tag == index{
                 let tap = tapGestArray[label.tag]
                 tapGestureClick(tap)
@@ -100,7 +100,7 @@ class STTitlesView: UIView {
 
 // MARK:- 设置UI
 extension STTitlesView {
-    private func setupUI(){
+    fileprivate func setupUI(){
         
         // 1 添加ScrollView
         addSubview(scrollView)
@@ -124,30 +124,30 @@ extension STTitlesView {
     }
     
     // 配置label
-    private func setupTitleLabel(){
+    fileprivate func setupTitleLabel(){
         
-        for (index,title) in titles.enumerate(){
+        for (index,title) in titles.enumerated(){
             let label = UILabel()
             label.backgroundColor = style.titleViewBackgroundColor
-            label.userInteractionEnabled = true
+            label.isUserInteractionEnabled = true
             label.text = title
             label.tag = index
             label.text = titles[index]
-            label.textAlignment = .Center
+            label.textAlignment = .center
             label.textColor = index == 0 ? style.selectColor : style.normalColor
-            label.font = UIFont.systemFontOfSize(style.fontSize)
+            label.font = UIFont.systemFont(ofSize: style.fontSize)
             scrollView.addSubview(label)
             labelArray.append(label)
             
             // 添加手势
-            let tapGesture = UITapGestureRecognizer(target: self, action: "tapGestureClick:")
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(STTitlesView.tapGestureClick(_:)))
             label.addGestureRecognizer(tapGesture)
             tapGestArray.append(tapGesture)
             
         }
     }
     // 配置Position
-    private func setupTitleLabelsPosition(){
+    fileprivate func setupTitleLabelsPosition(){
         
         var titleX: CGFloat = 0.0
         var titleW: CGFloat = 0.0
@@ -155,9 +155,9 @@ extension STTitlesView {
         let titleH : CGFloat = frame.height
         let count = titles.count
         
-        for (index, label) in labelArray.enumerate() {
+        for (index, label) in labelArray.enumerated() {
             if style.isScrollEnable {
-                let rect = (titles[index] as NSString).boundingRectWithSize(CGSize(width: CGFloat(MAXFLOAT), height: 0), options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName : label.font], context: nil)
+                let rect = (titles[index] as NSString).boundingRect(with: CGSize(width: CGFloat(MAXFLOAT), height: 0), options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName : label.font], context: nil)
                     titleW = rect.width
                 if index == 0 {
                     titleX = style.titleMargin * 0.5
@@ -176,7 +176,7 @@ extension STTitlesView {
             // 放大的代码
             if index == 0 {
                 let scale = style.isNeedScale ? style.scaleRange : 1.0
-                label.transform = CGAffineTransformMakeScale(scale, scale)
+                label.transform = CGAffineTransform(scaleX: scale, y: scale)
             }
 
     }
@@ -184,7 +184,7 @@ extension STTitlesView {
     
 }
     // 设置滚动条
-    private func setupBottomLine(){
+    fileprivate func setupBottomLine(){
         scrollView.addSubview(bottomLine)
         bottomLine.frame = labelArray.first!.frame
         bottomLine.frame.size.height = style.bottomLineHeight
@@ -192,8 +192,8 @@ extension STTitlesView {
     }
     
     // 设置遮盖
-    private func setupCoverView() {
-        scrollView.insertSubview(coverView, atIndex: 0)
+    fileprivate func setupCoverView() {
+        scrollView.insertSubview(coverView, at: 0)
         let firstLabel = labelArray[0]
         var coverW = firstLabel.frame.width
         let coverH = style.coverHeight
@@ -214,8 +214,8 @@ extension STTitlesView {
 
 // MARK:- 获取RGB的值
 extension STTitlesView {
-    private func getRGBWithColor(color : UIColor) -> (CGFloat, CGFloat, CGFloat) {
-        let components = CGColorGetComponents(color.CGColor)
+    fileprivate func getRGBWithColor(_ color : UIColor) -> (CGFloat, CGFloat, CGFloat) {
+        guard let components = color.cgColor.components else { return (0,0,0)}
 
         if components[0] >= 0 && components[1] >= 0 && components[2] >= 0{
             
@@ -230,14 +230,14 @@ extension STTitlesView {
 // MARK:- titleLabel点击事件
 extension STTitlesView {
     
-    func tapGestureClick(tapGesture : UITapGestureRecognizer){
+    func tapGestureClick(_ tapGesture : UITapGestureRecognizer){
         guard let targetLabel = tapGesture.view as? UILabel else { return }
         // 1 调整label的状态(结束选中的颜色,以及滚动到屏幕中部)
         adjustLabel(targetLabel.tag)
         
         // 2 判断是否显示底部滚动条
         if style.isShowScrollLine{
-            UIView.animateWithDuration(0.3, animations: { () -> Void in
+            UIView.animate(withDuration: 0.3, animations: { () -> Void in
                 self.bottomLine.frame.origin.x = targetLabel.frame.origin.x
                 self.bottomLine.frame.size.width = targetLabel.frame.width
             })
@@ -245,7 +245,7 @@ extension STTitlesView {
         
         // 3 判断是否显示遮盖
         if style.isShowCover{
-            UIView.animateWithDuration(0.3, animations: { () -> Void in
+            UIView.animate(withDuration: 0.3, animations: { () -> Void in
                 self.coverView.frame.origin.x = targetLabel.frame.origin.x
                 self.coverView.frame.size.width = targetLabel.frame.width
             })
@@ -254,7 +254,7 @@ extension STTitlesView {
         delegate?.stTitlesView(self, toIndex: currentIndex)
     }
     
-    func adjustLabel(targetIndex : Int){
+    func adjustLabel(_ targetIndex : Int){
         if currentIndex == targetIndex {return}
         // 取出label
         let fromLabel = labelArray[currentIndex]
@@ -266,8 +266,8 @@ extension STTitlesView {
         
         // 调整比例
         if style.isNeedScale {
-            fromLabel.transform = CGAffineTransformIdentity
-            targetLabel.transform = CGAffineTransformMakeScale(style.scaleRange,style.scaleRange)
+            fromLabel.transform = CGAffineTransform.identity
+            targetLabel.transform = CGAffineTransform(scaleX: style.scaleRange,y: style.scaleRange)
         }
 
         
@@ -294,12 +294,12 @@ extension STTitlesView {
 // MARK:- STContentViewDelegate
 extension STTitlesView : STContentViewDelegate {
     
-    func stContentView(stContentView: STContentView, targetIndex: Int) {
+    func stContentView(_ stContentView: STContentView, targetIndex: Int) {
         
         adjustLabel(targetIndex)
     }
     
-    func stContentView(stContentView: STContentView,currentIndex : Int, targetIndex: Int, process: CGFloat) {
+    func stContentView(_ stContentView: STContentView,currentIndex : Int, targetIndex: Int, process: CGFloat) {
         // 1 取出label
         let sourceLabel = labelArray[currentIndex]
         let targetLabel = labelArray[targetIndex]
@@ -335,7 +335,7 @@ extension STTitlesView : STContentViewDelegate {
 
 // MARK:- 对外暴露的方法
 extension STTitlesView {
-    func setTitleWithProgress(progress : CGFloat, sourceIndex : Int, targetIndex : Int) {
+    func setTitleWithProgress(_ progress : CGFloat, sourceIndex : Int, targetIndex : Int) {
         // 1.取出sourceLabel/targetLabel
         let sourceLabel = labelArray[sourceIndex]
         let targetLabel = labelArray[targetIndex]
@@ -366,8 +366,8 @@ extension STTitlesView {
             style.scaleRange - scaleDelta
             */
             let scaleDelta = (style.scaleRange - 1.0) * progress
-            sourceLabel.transform = CGAffineTransformMakeScale(style.scaleRange - scaleDelta, style.scaleRange - scaleDelta)
-            targetLabel.transform = CGAffineTransformMakeScale(1.0 + scaleDelta, 1.0 + scaleDelta)
+            sourceLabel.transform = CGAffineTransform(scaleX: style.scaleRange - scaleDelta, y: style.scaleRange - scaleDelta)
+            targetLabel.transform = CGAffineTransform(scaleX: 1.0 + scaleDelta, y: 1.0 + scaleDelta)
         }
         
         

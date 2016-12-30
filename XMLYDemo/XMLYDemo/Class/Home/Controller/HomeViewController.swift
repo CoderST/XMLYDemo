@@ -11,12 +11,13 @@ import UIKit
 class HomeViewController: BaseViewController {
 
     // MARK:- 懒加载
-    private lazy var homeVM : HomeTitleVM = HomeTitleVM()
+    fileprivate lazy var homeVM : HomeTitleVM = HomeTitleVM()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        title = "首页"
+/// 注意:在没有升级前下面这样写没有问题,升级后发现直接这样写会在tabBar出现一层(_UIBarBackground)frame = (0 0; 375 49),遮挡了tabBar的点击
+//        title = "首页"
+        navigationItem.title = "首页"
         
         setupUI()
     }
@@ -26,7 +27,7 @@ class HomeViewController: BaseViewController {
 
 extension HomeViewController {
     
-    private func setupUI() {
+    fileprivate func setupUI() {
         // 设置为false 不然STPageView的titleView的文本不显示(uiscrollow自动调整)
         automaticallyAdjustsScrollViewInsets = false
         
@@ -37,13 +38,13 @@ extension HomeViewController {
         setupMainView()
     }
     
-    private func setupSearchButton() {
+    fileprivate func setupSearchButton() {
         let searchBtn = STSearchButton(frame: CGRect(x: 0, y: 0, width: 200, height: searchButotnHeight))
-        searchBtn.addTarget(self, action: "searchBtnAction", forControlEvents: .TouchUpInside)
+        searchBtn.addTarget(self, action: #selector(HomeViewController.searchBtnAction), for: .touchUpInside)
         navigationItem.titleView = searchBtn
     }
     
-    private func setupMainView() {
+    fileprivate func setupMainView() {
         
         let rect = CGRect(x: 0, y: 64, width: view.frame.size.width, height: view.frame.size.height - 64 - 49)
         
@@ -52,6 +53,7 @@ extension HomeViewController {
         let style = STPageViewStyle()
         style.titleViewHeight = 44
         style.isShowScrollLine = true
+        style.titleViewBackgroundColor = UIColor(r: 237, g: 237, b: 237)
         homeVM.getTitlesData {[weak self] in
             let titles = self!.homeVM.titles.map({$0.title})
             print(titles)
@@ -64,7 +66,7 @@ extension HomeViewController {
 
 extension HomeViewController {
     
-    @objc private func searchBtnAction() {
+    @objc fileprivate func searchBtnAction() {
         
         print("searchBtnAction")
     }

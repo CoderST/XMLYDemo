@@ -13,6 +13,8 @@ class RecommendViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+//collectionView.backgroundColor = UIColor(r: 245, g: 245, b: 245)
+        view.backgroundColor = UIColor.randomColor()
 
     }
 

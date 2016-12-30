@@ -11,14 +11,14 @@ import SnapKit
 private let iconWH : CGFloat = 40
 class RecommendViewCell: UICollectionViewCell {
     
-    private lazy var iconImageView : UIImageView = UIImageView()
-    private lazy var titleLabel : UILabel = UILabel()
+    fileprivate lazy var iconImageView : UIImageView = UIImageView()
+    fileprivate lazy var titleLabel : UILabel = UILabel()
     
-    var discoveryColumnsItem : DiscoveryColumnsItem?{
+    var discoveryColumnsItem : HotSubModel?{
         
         didSet{
            
-            iconImageView.sd_setImageWithURL( NSURL(string: discoveryColumnsItem?.coverPath ?? ""), placeholderImage: UIImage(named: "placeholder_image"))
+            iconImageView.sd_setImage( with: URL(string: discoveryColumnsItem?.coverPath ?? ""), placeholderImage: UIImage(named: "placeholder_image"))
             titleLabel.text = discoveryColumnsItem?.title
         }
     }
@@ -28,23 +28,23 @@ class RecommendViewCell: UICollectionViewCell {
         contentView.addSubview(iconImageView)
         contentView.addSubview(titleLabel)
         
-        iconImageView.snp_makeConstraints { (make) in
+        iconImageView.snp.makeConstraints { (make) in
             make.centerX.equalTo(contentView)
             make.top.equalTo(10)
             make.size.equalTo(CGSize(width: iconWH, height: iconWH))
         }
         
-        titleLabel.snp_makeConstraints { (make) in
+        titleLabel.snp.makeConstraints { (make) in
             make.centerX.equalTo(contentView)
             make.bottom.equalTo(-5)
             make.width.equalTo(contentView)
             make.height.equalTo(20)
         }
         
-        iconImageView.contentMode = .ScaleAspectFit
-        titleLabel.textAlignment = .Center
-        titleLabel.font = UIFont.systemFontOfSize(12)
-        titleLabel.textColor = UIColor.grayColor()
+        iconImageView.contentMode = .scaleAspectFit
+        titleLabel.textAlignment = .center
+        titleLabel.font = UIFont.systemFont(ofSize: 12)
+        titleLabel.textColor = UIColor.gray
         
     }
     

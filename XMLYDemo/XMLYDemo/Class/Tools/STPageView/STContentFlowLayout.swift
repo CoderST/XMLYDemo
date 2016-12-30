@@ -10,18 +10,18 @@ import UIKit
 
 protocol STContentFlowLayoutDataSource : class{
     // 多少行
-    func rowsInSTContentFlowLayout(contentFlowLayout: STContentFlowLayout) -> Int
+    func rowsInSTContentFlowLayout(_ contentFlowLayout: STContentFlowLayout) -> Int
     // 多少列
-    func colsInSTContentFlowLayout(contentFlowLayout: STContentFlowLayout) -> Int
+    func colsInSTContentFlowLayout(_ contentFlowLayout: STContentFlowLayout) -> Int
 }
 
 class STContentFlowLayout: UICollectionViewFlowLayout {
 
-    private lazy var attributeArray : [UICollectionViewLayoutAttributes] = [UICollectionViewLayoutAttributes]()
+    fileprivate lazy var attributeArray : [UICollectionViewLayoutAttributes] = [UICollectionViewLayoutAttributes]()
     
     var prePageCount : Int = 0
     /// 最大宽度
-    private lazy var maxWidth : CGFloat = 0
+    fileprivate lazy var maxWidth : CGFloat = 0
     
     weak var dataSource : STContentFlowLayoutDataSource?
     
@@ -45,10 +45,10 @@ class STContentFlowLayout: UICollectionViewFlowLayout {
 }
 
 extension STContentFlowLayout {
-    override func prepareLayout() {
-        super.prepareLayout()
+    override func prepare() {
+        super.prepare()
         
-        scrollDirection = .Horizontal
+        scrollDirection = .horizontal
         
         guard let collectionview = collectionView else { return }
         
@@ -57,19 +57,19 @@ extension STContentFlowLayout {
         let itemH : CGFloat = (collectionview.bounds.height - sectionInset.top - sectionInset.bottom - CGFloat(rows - 1) * minimumLineSpacing) / CGFloat(rows)
         
         // 1. 获取组
-        let sections = collectionview.numberOfSections()
+        let sections = collectionview.numberOfSections
         
         // 2. 获取每组多少个
         for section in 0..<sections{
             // 每组多少个items
-            let items = collectionview.numberOfItemsInSection(section)
+            let items = collectionview.numberOfItems(inSection: section)
             // 每组多少页
 //            let pageOfSection = items / itemsOfPage
             for item in 0..<items{
                 // 2.1. 创建indexPath
-                let indexPath = NSIndexPath(forItem: item, inSection: section)
+                let indexPath = IndexPath(item: item, section: section)
                 // 2.2. 创建Attribute
-                let attribute = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+                let attribute = UICollectionViewLayoutAttributes(forCellWith: indexPath)
                 
                 // 2.3. 计算attribute大小
                 // 2.3.1. item在当前组第几页
@@ -96,7 +96,7 @@ extension STContentFlowLayout {
 
 extension STContentFlowLayout {
     
-    override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
      
         return attributeArray
     }
@@ -104,7 +104,7 @@ extension STContentFlowLayout {
 
 extension STContentFlowLayout {
     
-    override func collectionViewContentSize() -> CGSize {
+    override var collectionViewContentSize : CGSize {
         
         
         return  CGSize(width: maxWidth, height: 0)

@@ -9,30 +9,30 @@
 import UIKit
 /// 定义协议
 protocol STTabbarDelegate : class{
-    func didSelectButtonAtIndex(stTabbar : STTabBar, index : Int)
+    func didSelectButtonAtIndex(_ stTabbar : STTabBar, index : Int)
 }
 
 class STTabBar: UIView {
     // MARK:- 变量
     weak var delegate : STTabbarDelegate?
-    private var selectedButton : STButton?
+    fileprivate var selectedButton : STButton?
     // MARK:- 懒加载
-    private lazy var playButton : UIButton = {
-        let playButton = UIButton(type: .Custom)
-        playButton.setBackgroundImage(UIImage(named: "tabbar_np_play"), forState: .Normal)
-        playButton.setBackgroundImage(UIImage(named: "tabbar_np_play"), forState: .Highlighted)
+    fileprivate lazy var playButton : UIButton = {
+        let playButton = UIButton(type: .custom)
+        playButton.setBackgroundImage(UIImage(named: "tabbar_np_play"), for: UIControlState())
+        playButton.setBackgroundImage(UIImage(named: "tabbar_np_play"), for: .highlighted)
         
         if let currentBackgroundImage = playButton.currentBackgroundImage {
-            playButton.bounds = CGRectMake(0, 0, currentBackgroundImage.size.width, currentBackgroundImage.size.height);
+            playButton.bounds = CGRect(x: 0, y: 0, width: currentBackgroundImage.size.width, height: currentBackgroundImage.size.height);
             playButton.bounds = CGRect(x: 0, y: 0, width: currentBackgroundImage.size.width, height: currentBackgroundImage.size.height)
         }
         
-        playButton.addTarget(self, action: "playButtonAction:", forControlEvents: .TouchDown)
+        playButton.addTarget(self, action: #selector(STTabBar.playButtonAction(_:)), for: .touchDown)
         
         return playButton
         
     }()
-    private lazy var itemButtonArray : [STButton] = [STButton]()
+    fileprivate lazy var itemButtonArray : [STButton] = [STButton]()
 
     // 生命周期
     override init(frame: CGRect) {
@@ -63,7 +63,7 @@ class STTabBar: UIView {
         let buttonWidth = width / CGFloat(subviews.count)
         let buttonHeight = height
         let buttonY : CGFloat = 0
-        for (index,button) in itemButtonArray.enumerate(){
+        for (index,button) in itemButtonArray.enumerated(){
             button.tag = index
             var buttonX = CGFloat(index) * buttonWidth
             if index > 1 {
@@ -75,12 +75,12 @@ class STTabBar: UIView {
     }
     
     
-    func creatTabbarItem(item : UITabBarItem) {
+    func creatTabbarItem(_ item : UITabBarItem) {
         
         setupUI(item)
     }
     
-    @objc private func playButtonAction(button : UIButton){
+    @objc fileprivate func playButtonAction(_ button : UIButton){
                 print("playButtonAction")
     }
     
@@ -94,9 +94,9 @@ class STTabBar: UIView {
 
 extension STTabBar {
     
-    private func setupUI(item : UITabBarItem) {
+    fileprivate func setupUI(_ item : UITabBarItem) {
         guard let tabbarButton = STButton.creatButton(item) else { return }
-        tabbarButton.addTarget(self, action: "tabbarButtonAction:", forControlEvents: .TouchDown)
+        tabbarButton.addTarget(self, action: #selector(STTabBar.tabbarButtonAction(_:)), for: .touchDown)
         addSubview(tabbarButton)
         itemButtonArray.append(tabbarButton)
         
@@ -107,11 +107,11 @@ extension STTabBar {
 
     }
     
-    @objc private func tabbarButtonAction(button : STButton){
+    @objc fileprivate func tabbarButtonAction(_ button : STButton){
         delegate?.didSelectButtonAtIndex(self, index: button.tag)
         
-        selectedButton!.selected = false;
-        button.selected = true;
+        selectedButton!.isSelected = false;
+        button.isSelected = true;
         selectedButton = button;
     }
 

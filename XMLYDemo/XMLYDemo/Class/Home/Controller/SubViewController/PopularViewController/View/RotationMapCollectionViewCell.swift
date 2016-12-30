@@ -4,16 +4,16 @@
 //
 //  Created by xiudou on 2016/12/22.
 //  Copyright © 2016年 CoderST. All rights reserved.
-//
+//  轮播图cell
 
 import UIKit
 import SDWebImage
 class RotationMapCollectionViewCell: UICollectionViewCell {
     
-    private lazy var fourceImageView : UIImageView = {
+    fileprivate lazy var fourceImageView : UIImageView = {
        
         let fourceImageView = UIImageView()
-        fourceImageView.contentMode = .ScaleToFill
+        fourceImageView.contentMode = .scaleToFill
         
         return fourceImageView
     }()
@@ -24,9 +24,9 @@ class RotationMapCollectionViewCell: UICollectionViewCell {
     }
     
     
-    var focusImagesItem : FocusImagesItem?{
+    var focusImagesItem : HotSubModel?{
         didSet{
-            fourceImageView.sd_setImageWithURL(NSURL(string: focusImagesItem?.pic ?? ""), placeholderImage: UIImage(named: "cirle_image_place"))
+            fourceImageView.sd_setImage(with: URL(string: focusImagesItem?.pic ?? ""), placeholderImage: UIImage(named: "cirle_image_place"))
         }
     }
     

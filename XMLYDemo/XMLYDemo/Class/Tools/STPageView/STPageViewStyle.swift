@@ -7,9 +7,9 @@
 //  所有的样式
 
 import UIKit
-let STNSNotificationCenter = NSNotificationCenter.defaultCenter()
+let STNSNotificationCenter = NotificationCenter.default
 let DIDSELECTED_MENUM_TYPE = "didSelectedMenuType"
-let STNSUserDefaults = NSUserDefaults.standardUserDefaults()
+let STNSUserDefaults = UserDefaults.standard
 let HOMETYPE = "homeType"
 class STPageViewStyle {
     /***************** titleView相关设置 ******************/
@@ -21,7 +21,7 @@ class STPageViewStyle {
     var selectColor : UIColor = UIColor(r: 255, g: 127, b: 0)
     // 标题的字体大小
     var fontSize : CGFloat = 15.0
-    var titleViewBackgroundColor : UIColor = UIColor.clearColor()
+    var titleViewBackgroundColor : UIColor = UIColor.clear
     
     /// 是否进行缩放
     var isNeedScale : Bool = false
@@ -35,7 +35,7 @@ class STPageViewStyle {
     var isScrollEnable : Bool = false
     // 是否显示底部滚动条
     var isShowScrollLine : Bool = false
-    var bottomLineColor : UIColor = UIColor.orangeColor()
+    var bottomLineColor : UIColor = UIColor.orange
     var bottomLineHeight : CGFloat = 2
     /***************** 底部滚动条相关设置 ******************/
      
@@ -43,7 +43,7 @@ class STPageViewStyle {
      /***************** 遮盖相关设置 ******************/
      // 是否显示遮盖
     var isShowCover : Bool = false
-    var coverColor : UIColor = UIColor.grayColor()
+    var coverColor : UIColor = UIColor.gray
     var coverHeight : CGFloat = 30
     /// 文字&遮盖间隙
     var coverMargin : CGFloat = 5
@@ -54,9 +54,9 @@ class STPageViewStyle {
      
      /***************** UIPageControl相关设置 ******************/
     var pageControlHeight : CGFloat = 20
-    var currentPageIndicatorTintColor: UIColor = UIColor.orangeColor()
-    var pageIndicatorTintColor: UIColor = UIColor.blackColor()
-    var pageControlBackgroundColor : UIColor = UIColor.grayColor()
+    var currentPageIndicatorTintColor: UIColor = UIColor.orange
+    var pageIndicatorTintColor: UIColor = UIColor.black
+    var pageControlBackgroundColor : UIColor = UIColor.gray
     /***************** UIPageControl相关设置 ******************/
      
      // 每一个item间的间距

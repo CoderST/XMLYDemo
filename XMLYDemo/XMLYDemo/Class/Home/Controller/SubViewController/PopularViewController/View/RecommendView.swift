@@ -12,7 +12,7 @@ class RecommendView: UIView {
 
     var collectionView : UICollectionView!
     
-    var discoveryColumns : DiscoveryColumnsModel?{
+    var discoveryColumns : [HotSubModel]?{
         didSet{
             guard let _ = discoveryColumns else { return }
             collectionView.reloadData()
@@ -38,19 +38,19 @@ class RecommendView: UIView {
 
 extension RecommendView {
     
-    private func setupUI() {
+    fileprivate func setupUI() {
         
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: 60, height: sRecommendHeight)
-        layout.scrollDirection = .Horizontal
+        layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
-        collectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: layout)
-        collectionView.backgroundColor = UIColor.whiteColor()
+        collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = UIColor.white
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.registerClass(RecommendViewCell.self, forCellWithReuseIdentifier: RecommendViewCellIdentifier)
+        collectionView.register(RecommendViewCell.self, forCellWithReuseIdentifier: RecommendViewCellIdentifier)
         addSubview(collectionView)
     }
 }
@@ -58,13 +58,13 @@ extension RecommendView {
 // MARK:- UICollectionViewDataSource
 extension RecommendView : UICollectionViewDataSource{
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return discoveryColumns?.list.count ?? 0
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return discoveryColumns?.count ?? 0
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(RecommendViewCellIdentifier, forIndexPath: indexPath) as! RecommendViewCell
-        let discoveryColumnsItem = discoveryColumns!.list[indexPath.item]
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecommendViewCellIdentifier, for: indexPath) as! RecommendViewCell
+        let discoveryColumnsItem = discoveryColumns![indexPath.item]
         cell.discoveryColumnsItem = discoveryColumnsItem
         return cell
     }

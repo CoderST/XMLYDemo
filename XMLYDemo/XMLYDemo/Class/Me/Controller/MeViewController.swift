@@ -12,7 +12,8 @@ class MeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-title = "我"
+//title = "我"
+        navigationItem.title = "我"
         // Do any additional setup after loading the view.
     }
 

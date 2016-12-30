@@ -7,19 +7,43 @@
 //
 
 import UIKit
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
 
-let iOS7 = Double(UIDevice.currentDevice().systemVersion) >= 7.0
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func >= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l >= r
+  default:
+    return !(lhs < rhs)
+  }
+}
+
+
+let iOS7 = Double(UIDevice.current.systemVersion) >= 7.0
 /// 屏幕宽
-let stScreenW = UIScreen.mainScreen().bounds.width
+let stScreenW = UIScreen.main.bounds.width
 /// 屏幕高
-let stScreenH = UIScreen.mainScreen().bounds.height
+let stScreenH = UIScreen.main.bounds.height
 
 // 首页常量设置//
 let searchButotnHeight : CGFloat = 30
 
 // 推荐 -> 热门
 /// 轮播图高度
-let sRotationMapViewHeight : CGFloat = stScreenW * 3 / 8
+let sRotationMapViewHeight : CGFloat = stScreenW * 4 / 8
 /// 轮播图下面一排推荐的view
 let sRecommendHeight : CGFloat = 80
 // section Head尺寸
@@ -34,3 +58,5 @@ let sItemWidth : CGFloat = (stScreenW - (sColumn + 1) * sMargin) / (sColumn)
 let sGuessYouLikeItemHeight : CGFloat = sItemWidth * 5 / 4
 // 普通item的高度
 let sNormalItemHeight : CGFloat = sItemWidth * 3 / 2
+// 精品听单高度
+let sTingDanItemHeight : CGFloat = 80

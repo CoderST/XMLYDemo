@@ -7,18 +7,28 @@
 //  热门
 
 import UIKit
-private let GuessYouLikeCellIdentifier = "GuessYouLikeCellIdentifier"
+/// 头部
 private let reuseIdentifier = "reuseIdentifier"
+/// 猜你喜欢
+private let GuessYouLikeCellIdentifier = "GuessYouLikeCellIdentifier"
+/// 普通
 private let normalCellIdentifier = "normalCellIdentifier"
+/// 现场直播
+private let nowLiveCellIdentifier = "nowLiveCellIdentifier"
+/// 推广
+private let promotionCellIdentifier = "promotionCellIdentifier"
+/// 精品听单
+private let fineListenCellIdentifier = "fineListenCellIdentifier"
+
 class PopularViewController: UIViewController {
     
     // MARK:- 变量
     var collectionView : UICollectionView!
     
     // MARK:- 懒加载
-    private lazy var popularVM : PopularVM = PopularVM()
+    fileprivate lazy var popularViewModel : PopularViewModel = PopularViewModel()
     // 轮播图的view
-    private lazy var rotationMapView : RotationMapView = {
+    fileprivate lazy var rotationMapView : RotationMapView = {
         
         let rotationMapView = RotationMapView()
         rotationMapView.frame = CGRect(x: 0, y: -(sRotationMapViewHeight + sRecommendHeight), width: stScreenW, height: sRotationMapViewHeight)
@@ -26,25 +36,24 @@ class PopularViewController: UIViewController {
         
     }()
     // 推荐的view
-    private lazy var recommendView : RecommendView = RecommendView()
+    fileprivate lazy var recommendView : RecommendView = RecommendView()
     // ReusableView
-    private lazy var reusableView : PopularReusableView = PopularReusableView()
+    fileprivate lazy var reusableView : PopularReusableView = PopularReusableView()
     
     // MARK:- 生命周期
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        // 1 设置UI
         setupUI()
-        
-        getRotationMapViewData()
-        getMainDatas()
+        // 2 网络请求
+        getData()
         
         
     }
 }
 // MARK:- 设置UI
 extension PopularViewController {
-    private func setupUI() {
+    fileprivate func setupUI() {
         setupCollectionView()
         
         setupRotationMapView()
@@ -56,7 +65,7 @@ extension PopularViewController {
         
     }
     
-    private func setupCollectionView() {
+    fileprivate func setupCollectionView() {
         // 设置layout属性
         let layout = UICollectionViewFlowLayout()
         layout.headerReferenceSize = CGSize(width: stScreenW, height: sHeaderReferenceHeight)
@@ -69,28 +78,34 @@ extension PopularViewController {
         // 设置数据源
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.backgroundColor = UIColor.whiteColor()
-        
-        collectionView.backgroundColor = UIColor.purpleColor()
-        
-        // 注册猜你喜欢cell
-        collectionView.registerClass(GuessYouLikeCell.self, forCellWithReuseIdentifier: GuessYouLikeCellIdentifier)
-        
-        // 注册精品,小编推荐类似的cell(普通的cell)
-        collectionView.registerClass(NormalCell.self, forCellWithReuseIdentifier: normalCellIdentifier)
+        collectionView.backgroundColor = UIColor(r: 245, g: 245, b: 245)
         
         // 注册PopularReusableView
-        collectionView.registerClass(PopularReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: reuseIdentifier)
+        collectionView.register(PopularReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: reuseIdentifier)
         
+        // 注册猜你喜欢cell
+        collectionView.register(GuessYouLikeCell.self, forCellWithReuseIdentifier: GuessYouLikeCellIdentifier)
+        
+        // 注册精品,小编推荐类似的cell(普通的cell)
+        collectionView.register(NormalCell.self, forCellWithReuseIdentifier: normalCellIdentifier)
+        
+        // 注册现场直播
+        collectionView.register(NowLiveCell.self, forCellWithReuseIdentifier: nowLiveCellIdentifier)
+        
+        // 精品听单 FineListenCell
+        collectionView.register(FineListenCell.self, forCellWithReuseIdentifier: fineListenCellIdentifier)
+        
+        // 注册推广 PromotionCell
+        collectionView.register(PromotionCell.self, forCellWithReuseIdentifier: promotionCellIdentifier)
         view.addSubview(collectionView)
     }
     
-    private func setupRotationMapView() {
+    fileprivate func setupRotationMapView() {
         collectionView.addSubview(rotationMapView)
         
     }
     
-    private func setupRecommendView() {
+    fileprivate func setupRecommendView() {
         collectionView.addSubview(recommendView)
         recommendView.frame = CGRect(x: 0, y: -sRecommendHeight, width: stScreenW, height: sRecommendHeight)
         
@@ -100,18 +115,11 @@ extension PopularViewController {
 
 // MARK:- 获取网络数据
 extension PopularViewController {
-    
-    func getRotationMapViewData() {
-        popularVM.getRecommendsIncludeActivityData {
-            let focusImages = self.popularVM.focusImagesModel?.list
-            self.rotationMapView.focusImagesItems = focusImages
-        }
-    }
-    
-    func getMainDatas() {
-        popularVM.getMainDatas {
-            // 给推荐view传递数据
-            self.recommendView.discoveryColumns = self.popularVM.discoverModel
+    func getData() {
+        popularViewModel.getData {
+            self.rotationMapView.focusImagesItems = self.popularViewModel.rotationMapModels
+            self.recommendView.discoveryColumns = self.popularViewModel.discoveryColumnsSubItem
+            
             self.collectionView.reloadData()
         }
     }
@@ -121,64 +129,75 @@ extension PopularViewController {
 extension PopularViewController : UICollectionViewDataSource {
     
     
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int{
+    func numberOfSections(in collectionView: UICollectionView) -> Int{
         
-        return 2
+        
+        return popularViewModel.popularModels.count 
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        if section == 0{
-            
-            return popularVM.guessModel?.list.count ?? 0
-        }
-        else{
-            
-            return popularVM.hotRecommendsModel?.list.first?.list.count ?? 0
-        }
+        
+        return popularViewModel.popularModels[section].list.count 
         
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        if indexPath.section == 0{
-            
-            let guessYouLikeCell = collectionView.dequeueReusableCellWithReuseIdentifier(GuessYouLikeCellIdentifier, forIndexPath: indexPath) as! GuessYouLikeCell
-            // 传递模型
-            guessYouLikeCell.guessItem = popularVM.guessModel!.list[indexPath.item]
-            guessYouLikeCell.contentView.backgroundColor = UIColor.randomColor()
+        let model = popularViewModel.popularModels[indexPath.section]
+        if model.title == "猜你喜欢"{  // 猜你喜欢
+            let guessYouLikeCell = collectionView.dequeueReusableCell(withReuseIdentifier: GuessYouLikeCellIdentifier, for: indexPath) as! GuessYouLikeCell
+            guessYouLikeCell.guessItem = popularViewModel.caiNiXiHuanModels.first?.list[indexPath.item]
             return guessYouLikeCell
+        }else if model.title == "精品听单"{  //  精品听单
+            let fineListenCell = collectionView.dequeueReusableCell(withReuseIdentifier: fineListenCellIdentifier, for: indexPath) as! FineListenCell
+            fineListenCell.fineListenSubItem = popularViewModel.jingPingTingDanModels.first?.list[indexPath.item]
+            return fineListenCell
+        }else if model.title == "现场直播"{ // 现场直播
+            let nowLiveCell = collectionView.dequeueReusableCell(withReuseIdentifier: nowLiveCellIdentifier, for: indexPath) as! NowLiveCell
+            nowLiveCell.nowLiveSubItem = popularViewModel.xianChagnZhiBoModels.first?.list
+            return nowLiveCell
+        }else if (model.title == "推广"){                          // 推广
+            let promotionCell = collectionView.dequeueReusableCell(withReuseIdentifier: promotionCellIdentifier, for: indexPath) as! PromotionCell
+            promotionCell.promotionSubItem = popularViewModel.popularModels[indexPath.section].list.first
+            return promotionCell
+            
         }else{
-            let normalCell = collectionView.dequeueReusableCellWithReuseIdentifier(normalCellIdentifier, forIndexPath: indexPath) as! NormalCell
-            normalCell.contentView.backgroundColor = UIColor.randomColor()
-            normalCell.hotRecommendsSubItem = popularVM.hotRecommendsModel?.list.first?.list[indexPath.item]
-            return normalCell
+            
+            let normalCell = collectionView.dequeueReusableCell(withReuseIdentifier: normalCellIdentifier, for: indexPath) as! NormalCell
+            if indexPath.section == 2 {
+                normalCell.hotRecommendsSubItem = popularViewModel.popularModels[indexPath.section].list[indexPath.item]
+                return normalCell
+            }else{
+                normalCell.hotRecommendsSubItem = popularViewModel.popularModels[indexPath.section].list[indexPath.item]
+                return normalCell
+            }
         }
         
     }
-    
-    
 }
 
 extension PopularViewController : UICollectionViewDelegate {
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-        if indexPath.section == 0{
-            
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
+        let model = popularViewModel.popularModels[indexPath.section]
+        if model.title == "猜你喜欢"{  // 猜你喜欢
             return CGSize(width: sItemWidth, height: sGuessYouLikeItemHeight)
-        }else {
+        }else if model.title == "精品听单"{  // 精品听单
+            return CGSize(width: stScreenW, height: sTingDanItemHeight)
+        }else if model.title == "推广"{   // 推广
+            return CGSize(width: stScreenW, height: sNormalItemHeight)
+        }else if model.title == "现场直播"{   // 现场直播
+            return CGSize(width: stScreenW, height: sNormalItemHeight)
+        }
+        else{
             return CGSize(width: sItemWidth, height: sNormalItemHeight)
         }
     }
     
-    func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         // 1.取出section的HeaderView
-        let headerView = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: reuseIdentifier, forIndexPath: indexPath) as!PopularReusableView
-        if indexPath.section == 0{
-            
-            headerView.title = popularVM.guessModel?.title
-        }else{
-            headerView.title = popularVM.hotRecommendsModel?.list.first?.title
-        }
+        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: reuseIdentifier, for: indexPath) as!PopularReusableView
+        headerView.title = popularViewModel.popularModels[indexPath.section].title
         return headerView
     }
     

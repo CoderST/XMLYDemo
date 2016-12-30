@@ -11,11 +11,11 @@ import UIKit
 class STPageView: UIView {
 
     // MARK:- 定义属性
-    private var titles : [String]
-    private var childsVC : [UIViewController]
-    private var parentVC : UIViewController
-    private var style : STPageViewStyle
-    private var titleView : STTitlesView!
+    fileprivate var titles : [String]
+    fileprivate var childsVC : [UIViewController]
+    fileprivate var parentVC : UIViewController
+    fileprivate var style : STPageViewStyle
+    fileprivate var titleView : STTitlesView!
     
     
     // MARK:- 自定义构造函数
@@ -38,22 +38,22 @@ class STPageView: UIView {
 
 extension STPageView {
     
-    private func stupUI(){
+    fileprivate func stupUI(){
         
         stupTitleView()
         setupContentView()
         
     }
     
-    private func stupTitleView(){
+    fileprivate func stupTitleView(){
         let titleviewF = CGRect(x: 0, y: 0, width: self.frame.width, height: style.titleViewHeight)
         titleView = STTitlesView(frame: titleviewF, titles: self.titles, style: self.style)
-        titleView.backgroundColor = UIColor.randomColor()
+        titleView.backgroundColor = style.titleViewBackgroundColor
          addSubview(titleView)
 
     }
     
-    private func setupContentView(){
+    fileprivate func setupContentView(){
         let contentViewF = CGRect(x: 0, y: style.titleViewHeight, width: self.frame.width, height: self.frame.height - style.titleViewHeight)
         let contentView = STContentView(frame: contentViewF, childsVC: self.childsVC, parentVC: self.parentVC)
         addSubview(contentView)

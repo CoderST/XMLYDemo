@@ -15,9 +15,9 @@ class HomeTitleVM: NSObject {
 
 extension HomeTitleVM {
     
-    func getTitlesData(finishedCallBack : ()->()){
+    func getTitlesData(_ finishedCallBack : @escaping ()->()){
         let url = "http://mobile.ximalaya.com/mobile/discovery/v2/tabs?device=iPhone&version=5.4.57"
-        NetWorkTools.shareInstance.requestData(.GET, URLString: url) { (result) in
+        NetWorkTools.shareInstance.requestData(.get, URLString: url) { (result) in
             guard let resultDic = result as? [String : AnyObject]else { return }
             guard let tagsDic = resultDic["tabs"] as? [String : AnyObject]else{ return }
             guard let listArray = tagsDic["list"] as? [[String : AnyObject]] else { return }

@@ -23,31 +23,31 @@ extension UIColor {
         }
         
         // 2.将字符串转成大写
-        var tempHex = hex.uppercaseString
+        var tempHex = hex.uppercased()
         
         // 3.判断开头: 0x/#/##
         if tempHex.hasPrefix("0x") || tempHex.hasPrefix("##") {
-            tempHex = (tempHex as NSString).substringFromIndex(2)
+            tempHex = (tempHex as NSString).substring(from: 2)
         }
         if tempHex.hasPrefix("#") {
-            tempHex = (tempHex as NSString).substringFromIndex(1)
+            tempHex = (tempHex as NSString).substring(from: 1)
         }
         
         // 4.分别取出RGB
         // FF --> 255
         var range = NSRange(location: 0, length: 2)
-        let rHex = (tempHex as NSString).substringWithRange(range)
+        let rHex = (tempHex as NSString).substring(with: range)
         range.location = 2
-        let gHex = (tempHex as NSString).substringWithRange(range)
+        let gHex = (tempHex as NSString).substring(with: range)
         range.location = 4
-        let bHex = (tempHex as NSString).substringWithRange(range)
+        let bHex = (tempHex as NSString).substring(with: range)
         
         // 5.将十六进制转成数字 emoji表情
         var r : UInt32 = 0, g : UInt32 = 0, b : UInt32 = 0
         
-        NSScanner(string: rHex).scanHexInt(&r)
-        NSScanner(string: gHex).scanHexInt(&g)
-        NSScanner(string: bHex).scanHexInt(&b)
+        Scanner(string: rHex).scanHexInt32(&r)
+        Scanner(string: gHex).scanHexInt32(&g)
+        Scanner(string: bHex).scanHexInt32(&b)
         
         self.init(r : CGFloat(r), g : CGFloat(g), b : CGFloat(b))
     }
@@ -56,7 +56,7 @@ extension UIColor {
         return UIColor(r: CGFloat(arc4random_uniform(256)), g: CGFloat(arc4random_uniform(256)), b: CGFloat(arc4random_uniform(256)))
     }
     
-    class func getRGBDelta(firstColor : UIColor, seccondColor : UIColor) -> (CGFloat, CGFloat,  CGFloat) {
+    class func getRGBDelta(_ firstColor : UIColor, seccondColor : UIColor) -> (CGFloat, CGFloat,  CGFloat) {
         let firstRGB = firstColor.getRGB()
         let secondRGB = seccondColor.getRGB()
         
@@ -65,8 +65,7 @@ extension UIColor {
     
     func getRGB() -> (CGFloat, CGFloat, CGFloat) {
 
-        let components = CGColorGetComponents(CGColor)
-        
+        guard let components = cgColor.components else { return (0,0,0)}
         if components[0] >= 0 && components[1] >= 0 && components[2] >= 0{
             
             return (components[0] * 255, components[1] * 255, components[2] * 255)

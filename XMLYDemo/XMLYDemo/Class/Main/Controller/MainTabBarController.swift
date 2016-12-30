@@ -11,7 +11,7 @@ import UIKit
 class MainTabBarController: UITabBarController {
     
     // MARK:- 懒加载
-    private lazy var tabbar : STTabBar = {[weak self] in
+    fileprivate lazy var tabbar : STTabBar = {[weak self] in
         let tabbar = STTabBar()
         tabbar.delegate = self
         tabbar.frame = self!.tabBar.bounds
@@ -32,7 +32,7 @@ class MainTabBarController: UITabBarController {
     }
     
     /// 去除系统的item
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         for subView in tabBar.subviews{
             guard subView is UIControl else { continue }
@@ -40,15 +40,20 @@ class MainTabBarController: UITabBarController {
         }
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        print("mmmmmmmm",tabBar.subviews)
+    }
+    
 }
 
 extension MainTabBarController {
     
-    private func setupTabBar() {
+    fileprivate func setupTabBar() {
         tabBar.addSubview(tabbar)
     }
     
-    private func setupAddChildViewController() {
+    fileprivate func setupAddChildViewController() {
         addChildVc(HomeViewController(), title: "", normalImageName: "tabbar_icon_homepage_normal", selectedImageName: "tabbar_icon_homepage_pressed")
         addChildVc(SubscriptionViewController(), title: "", normalImageName: "tabbar_icon_Rss_normal", selectedImageName: "tabbar_icon_Rss_pressed")
         addChildVc(FindViewController(), title: "", normalImageName: "tabbar_icon_find_normal", selectedImageName: "tabbar_icon_find_pressed")
@@ -56,17 +61,17 @@ extension MainTabBarController {
 
     }
     
-    private func removeImageViewLine() {
+    fileprivate func removeImageViewLine() {
         
-        let rect = CGRectMake(0, 0, stScreenW, stScreenH);
+        let rect = CGRect(x: 0, y: 0, width: stScreenW, height: stScreenH);
         
         UIGraphicsBeginImageContext(rect.size);
         
         let context = UIGraphicsGetCurrentContext();
         
-        CGContextSetFillColorWithColor(context, UIColor.clearColor().CGColor);
+        context?.setFillColor(UIColor.clear.cgColor);
         
-        CGContextFillRect(context, rect);
+        context?.fill(rect);
         
         let img = UIGraphicsGetImageFromCurrentImageContext();
         
@@ -78,14 +83,14 @@ extension MainTabBarController {
     }
     
     // 子控制器实现
-    private func addChildVc(childVc : UIViewController, title : String, normalImageName : String, selectedImageName : String){
+    fileprivate func addChildVc(_ childVc : UIViewController, title : String, normalImageName : String, selectedImageName : String){
         // 标题
         childVc.title = title
         // 图片
         childVc.tabBarItem.image = UIImage(named: normalImageName)
         guard let selectedImage = UIImage(named: selectedImageName) else { return }
         if iOS7{
-            childVc.tabBarItem.selectedImage = selectedImage.imageWithRenderingMode(.AlwaysOriginal)
+            childVc.tabBarItem.selectedImage = selectedImage.withRenderingMode(.alwaysOriginal)
         }else{
             childVc.tabBarItem.selectedImage = selectedImage
         }
@@ -100,7 +105,7 @@ extension MainTabBarController {
 
 extension MainTabBarController : STTabbarDelegate {
     
-    func didSelectButtonAtIndex(stTabbar: STTabBar, index: Int) {
+    func didSelectButtonAtIndex(_ stTabbar: STTabBar, index: Int) {
         selectedIndex = index
     }
 }

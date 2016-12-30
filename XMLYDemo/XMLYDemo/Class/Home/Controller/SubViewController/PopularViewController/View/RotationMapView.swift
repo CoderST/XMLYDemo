@@ -20,17 +20,17 @@ class RotationMapView: UIView {
     }
     
     // MARK:- 属性
-    var focusImagesItemTime : NSTimer?
+    var focusImagesItemTime : Timer?
     
-    var focusImagesItems : [FocusImagesItem]?{
+    var focusImagesItems : [HotSubModel]?{
         didSet{
             
             guard let focusImagesItems = focusImagesItems else { return }
             
             collectionView.reloadData()
             // 3.默认滚动到中间某一个位置
-            let indexPath = NSIndexPath(forItem: focusImagesItems.count * 10, inSection: 0)
-            collectionView.scrollToItemAtIndexPath(indexPath, atScrollPosition: .Left, animated: false)
+            let indexPath = IndexPath(item: focusImagesItems.count * 10, section: 0)
+            collectionView.scrollToItem(at: indexPath, at: .left, animated: false)
             
             
             // 定时器操作
@@ -49,14 +49,14 @@ class RotationMapView: UIView {
 
 extension RotationMapView {
     
-    private func setupUI() {
+    fileprivate func setupUI() {
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .Horizontal
-        collectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: layout)
-        collectionView.pagingEnabled = true
+        layout.scrollDirection = .horizontal
+        collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
+        collectionView.isPagingEnabled = true
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.registerClass(RotationMapCollectionViewCell.self, forCellWithReuseIdentifier: RotationMapCollectionViewCellIdentifier)
+        collectionView.register(RotationMapCollectionViewCell.self, forCellWithReuseIdentifier: RotationMapCollectionViewCellIdentifier)
         addSubview(collectionView)
     }
     
@@ -74,12 +74,12 @@ extension RotationMapView {
 // MARK:- UICollectionViewDataSource
 extension RotationMapView : UICollectionViewDataSource{
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return (focusImagesItems?.count ?? 0) * 10000
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cycleCell = collectionView.dequeueReusableCellWithReuseIdentifier(RotationMapCollectionViewCellIdentifier, forIndexPath: indexPath) as! RotationMapCollectionViewCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cycleCell = collectionView.dequeueReusableCell(withReuseIdentifier: RotationMapCollectionViewCellIdentifier, for: indexPath) as! RotationMapCollectionViewCell
         let focusImagesItem = focusImagesItems![indexPath.item % (focusImagesItems?.count ?? 0)]
         cycleCell.focusImagesItem = focusImagesItem
         return cycleCell
@@ -90,12 +90,12 @@ extension RotationMapView : UICollectionViewDataSource{
 // MARK:- UICollectionViewDelegate
 extension RotationMapView : UICollectionViewDelegate{
     
-    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         
         removeTime()
     }
     
-    func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         addTime()
     }
 }
@@ -104,23 +104,23 @@ extension RotationMapView : UICollectionViewDelegate{
 extension RotationMapView {
     
     // 创建定时器
-    private func addTime(){
-        focusImagesItemTime = NSTimer(timeInterval: 3.0, target: self, selector: "scrollToNextPage", userInfo: nil, repeats: true)
-        NSRunLoop.mainRunLoop().addTimer(focusImagesItemTime!, forMode: NSRunLoopCommonModes)
+    fileprivate func addTime(){
+        focusImagesItemTime = Timer(timeInterval: 3.0, target: self, selector: #selector(RotationMapView.scrollToNextPage), userInfo: nil, repeats: true)
+        RunLoop.main.add(focusImagesItemTime!, forMode: RunLoopMode.commonModes)
     }
     
-    private func removeTime(){
+    fileprivate func removeTime(){
         focusImagesItemTime?.invalidate()
         focusImagesItemTime = nil
     }
     
-    @objc private func scrollToNextPage(){
+    @objc fileprivate func scrollToNextPage(){
         // 获取当前的偏移量
         let offSet = collectionView.contentOffset.x
         // 即将要滚动的偏移量
         let newOffSet = offSet + collectionView.bounds.width
         // 开始滚动
-        collectionView.setContentOffset(CGPointMake(newOffSet, 0), animated: true)
+        collectionView.setContentOffset(CGPoint(x: newOffSet, y: 0), animated: true)
     }
 }
 

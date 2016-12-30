@@ -12,7 +12,7 @@ class SubscriptionViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-title = "订阅"
+navigationItem.title = "订阅"
         // Do any additional setup after loading the view.
     }
 

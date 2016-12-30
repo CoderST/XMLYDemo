@@ -12,7 +12,8 @@ class FindViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-title = "发现"
+//title = "发现"
+        navigationItem.title = "发现"
         // Do any additional setup after loading the view.
     }
 

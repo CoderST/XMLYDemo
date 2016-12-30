@@ -13,7 +13,7 @@ class SpecialColumnModel: BaseModel {
     var title : String = ""
     var list : [SpecialColumnItem] = [SpecialColumnItem]()
     
-    override func setValue(value: AnyObject?, forKey key: String) {
+    override func setValue(_ value: Any?, forKey key: String) {
         if key == "list"{
             if let listArray = value as? [[String : AnyObject]]{
                 for listDict in listArray {

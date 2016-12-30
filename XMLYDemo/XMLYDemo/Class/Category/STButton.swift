@@ -11,7 +11,7 @@ private let buttonScale : CGFloat = 0.65
 class STButton: UIButton {
 
     /// 重写父类方法,禁止按钮选中高亮状态
-    override var highlighted: Bool {
+    override var isHighlighted: Bool {
         
         get{ return false }
         
@@ -24,23 +24,23 @@ class STButton: UIButton {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        imageView?.contentMode = .Center
-        titleLabel?.textAlignment = .Center
-        titleLabel?.font = UIFont.systemFontOfSize(12)
-        setTitleColor(iOS7 ? UIColor.blackColor() : UIColor.orangeColor(), forState: .Normal)
-        setTitleColor(iOS7 ? UIColor.redColor() : UIColor.purpleColor(), forState: .Selected)
+        imageView?.contentMode = .center
+        titleLabel?.textAlignment = .center
+        titleLabel?.font = UIFont.systemFont(ofSize: 12)
+        setTitleColor(iOS7 ? UIColor.black : UIColor.orange, for: UIControlState())
+        setTitleColor(iOS7 ? UIColor.red : UIColor.purple, for: .selected)
         
     }
     
     
     
-    class func creatButton(item : UITabBarItem)->STButton?{
-        let button = STButton(type: .Custom)
+    class func creatButton(_ item : UITabBarItem)->STButton?{
+        let button = STButton(type: .custom)
         guard let normalImage = item.image else { return nil }
         guard let selectedImage = item.selectedImage else { return nil }
-        button.setImage(normalImage, forState: .Normal)
-        button.setImage(selectedImage, forState: .Selected)
-        button.setTitle(item.title, forState: .Normal)
+        button.setImage(normalImage, for: UIControlState())
+        button.setImage(selectedImage, for: .selected)
+        button.setTitle(item.title, for: UIControlState())
         return button
     }
     

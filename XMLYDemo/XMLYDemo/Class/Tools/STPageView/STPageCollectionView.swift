@@ -11,31 +11,31 @@ import UIKit
 // MARK:- STPageCollectionView数据源方法
 protocol STPageCollectionViewDataSource : class {
     /// 多少组
-    func numberOfSectionsInSTPageCollectionView(pageCollectionView: STPageCollectionView) -> Int
+    func numberOfSectionsInSTPageCollectionView(_ pageCollectionView: STPageCollectionView) -> Int
     /// 每组多少item
-    func pageCollectionView(pageCollectionView: STPageCollectionView, numberOfItemsInSection section: Int) -> Int
+    func pageCollectionView(_ pageCollectionView: STPageCollectionView, numberOfItemsInSection section: Int) -> Int
     /// 定义cell
-    func pageCollectionView(pageCollectionView: STPageCollectionView, collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell
+    func pageCollectionView(_ pageCollectionView: STPageCollectionView, collectionView: UICollectionView, cellForItemAtIndexPath indexPath: IndexPath) -> UICollectionViewCell
 }
 // MARK:- STPageCollectionView代理
 protocol STPageCollectionViewDelegate : class {
-    func pageCollectionView(stPageCollectionView: STPageCollectionView, didSelectItemAt indexPath: NSIndexPath)
+    func pageCollectionView(_ stPageCollectionView: STPageCollectionView, didSelectItemAt indexPath: IndexPath)
 }
 
 class STPageCollectionView: UIView {
     
     // MARK:- 定义属性
     // 接收属性
-    private var titles : [String]
-    private var style : STPageViewStyle
-    private var isTitleInTop : Bool
-    private var layout : STContentFlowLayout
+    fileprivate var titles : [String]
+    fileprivate var style : STPageViewStyle
+    fileprivate var isTitleInTop : Bool
+    fileprivate var layout : STContentFlowLayout
     // 记录属性
-    private var sourceIndexPath : NSIndexPath = NSIndexPath(forItem: 0, inSection: 0)
-    private var collectionView : UICollectionView!
+    fileprivate var sourceIndexPath : IndexPath = IndexPath(item: 0, section: 0)
+    fileprivate var collectionView : UICollectionView!
     // 控件属性
-    private var titleView : STTitlesView!
-    private var pageControl : UIPageControl!
+    fileprivate var titleView : STTitlesView!
+    fileprivate var pageControl : UIPageControl!
     // 数据源,代理
     weak var dataSource : STPageCollectionViewDataSource?
     weak var delegate : STPageCollectionViewDelegate?
@@ -60,16 +60,16 @@ extension STPageCollectionView {
     /**
      Class 注册cell
      */
-    func registerClass(cellClass : AnyClass?, forCellWithReuseIdentifier : String) {
+    func registerClass(_ cellClass : AnyClass?, forCellWithReuseIdentifier : String) {
         
         
-        collectionView.registerClass(cellClass, forCellWithReuseIdentifier: forCellWithReuseIdentifier)
+        collectionView.register(cellClass, forCellWithReuseIdentifier: forCellWithReuseIdentifier)
     }
     /**
      UINib 注册cell
      */
-    func registerNib(nib : UINib?, forCellWithReuseIdentifier : String) {
-        collectionView.registerNib(nib, forCellWithReuseIdentifier: forCellWithReuseIdentifier)
+    func registerNib(_ nib : UINib?, forCellWithReuseIdentifier : String) {
+        collectionView.register(nib, forCellWithReuseIdentifier: forCellWithReuseIdentifier)
     }
     /**
      刷新
@@ -82,7 +82,7 @@ extension STPageCollectionView {
 // MARK:- 设置UI(titleView,UIPageControl,UICollectionView)
 extension STPageCollectionView {
     
-    private func setupUI() {
+    fileprivate func setupUI() {
         
         // 1.创建titleView
         let titleY = isTitleInTop ? 0 : bounds.height - style.titleViewHeight
@@ -100,17 +100,17 @@ extension STPageCollectionView {
         pageControl.currentPageIndicatorTintColor = style.currentPageIndicatorTintColor
         pageControl.pageIndicatorTintColor = style.pageIndicatorTintColor
         pageControl.numberOfPages = 4
-        pageControl.enabled = false
+        pageControl.isEnabled = false
         addSubview(pageControl)
         
         // 3.创建UICollectionView
         let collectionViewY = isTitleInTop ? style.titleViewHeight : 0
         let collectionViewFrame = CGRect(x: 0, y: collectionViewY, width: bounds.width, height: bounds.height - style.titleViewHeight - style.pageControlHeight)
         collectionView = UICollectionView(frame: collectionViewFrame, collectionViewLayout: layout)
-        collectionView.backgroundColor = UIColor.clearColor()
+        collectionView.backgroundColor = UIColor.clear
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.pagingEnabled = true
+        collectionView.isPagingEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
         addSubview(collectionView)
         pageControl.backgroundColor = collectionView.backgroundColor
@@ -120,12 +120,12 @@ extension STPageCollectionView {
 // MARK:- UICollectionViewDataSource
 extension STPageCollectionView : UICollectionViewDataSource {
     
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int{
+    func numberOfSections(in collectionView: UICollectionView) -> Int{
         
         return dataSource?.numberOfSectionsInSTPageCollectionView(self) ?? 0
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let itemCount = dataSource?.pageCollectionView(self, numberOfItemsInSection: section) ?? 0
         if section == 0 {
             pageControl.numberOfPages = (itemCount - 1) / (layout.cols * layout.rows) + 1
@@ -134,7 +134,7 @@ extension STPageCollectionView : UICollectionViewDataSource {
         return dataSource?.pageCollectionView(self, numberOfItemsInSection: section) ?? 0
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell{
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell{
         // 此处可以强制解包
         return dataSource!.pageCollectionView(self, collectionView: collectionView, cellForItemAtIndexPath: indexPath)
     }
@@ -143,18 +143,18 @@ extension STPageCollectionView : UICollectionViewDataSource {
 // MARK:- UICollectionViewDelegate
 extension STPageCollectionView : UICollectionViewDelegate {
     
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     
         delegate?.pageCollectionView(self, didSelectItemAt: indexPath)
     }
     
     // 停止惯性的处理
-    func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         
         changePageControl()
     }
     
-    func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         
         if !decelerate{
             changePageControl()
@@ -165,7 +165,7 @@ extension STPageCollectionView : UICollectionViewDelegate {
         
         // 1.取出在屏幕中显示的Cell
         let point = CGPoint(x: layout.sectionInset.left + 1 + collectionView.contentOffset.x, y: layout.sectionInset.top + 1)
-        guard let indexPath = collectionView.indexPathForItemAtPoint(point) else { return }
+        guard let indexPath = collectionView.indexPathForItem(at: point) else { return }
         
         // 2.判断分组是否有发生改变
         if sourceIndexPath.section != indexPath.section {
@@ -187,10 +187,10 @@ extension STPageCollectionView : UICollectionViewDelegate {
 
 extension STPageCollectionView : STTitlesViewDelegate {
     
-    func stTitlesView(stTitlesView: STTitlesView, toIndex: Int) {
+    func stTitlesView(_ stTitlesView: STTitlesView, toIndex: Int) {
         
-        let indexPath = NSIndexPath(forItem: 0, inSection: toIndex)
-        collectionView.scrollToItemAtIndexPath(indexPath, atScrollPosition: .Left, animated: false)
+        let indexPath = IndexPath(item: 0, section: toIndex)
+        collectionView.scrollToItem(at: indexPath, at: .left, animated: false)
         collectionView.contentOffset.x -= layout.sectionInset.left
         //FIXME: scrollToItemAtIndexPath 方法滚动后没有回到正确的位置 
         changePageControl()

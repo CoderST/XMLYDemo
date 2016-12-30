@@ -6,7 +6,7 @@ target 'XMLYDemo' do
   use_frameworks!
 
 pod 'SVProgressHUD'
-pod 'Alamofire', '~> 3.2.1'
-pod 'SnapKit', '~> 0.19.1'
+pod 'Alamofire'
+pod 'SnapKit'
 pod 'SDWebImage'
 end

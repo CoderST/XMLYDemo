@@ -9,44 +9,44 @@
 import UIKit
 protocol STContentViewDelegate : class{
     /// 结束滚动时调用
-    func stContentView(stContentView : STContentView, targetIndex : Int)
+    func stContentView(_ stContentView : STContentView, targetIndex : Int)
     /// 滚动过程时调用
-    func stContentView(stContentView : STContentView, currentIndex : Int, targetIndex : Int, process : CGFloat)
+    func stContentView(_ stContentView : STContentView, currentIndex : Int, targetIndex : Int, process : CGFloat)
 }
 private let stContentViewCellIdentifier = "stContentViewCellIdentifier"
 class STContentView: UIView {
 
 
     // MARK:- 定义属性
-    private var childsVC : [UIViewController]
-    private var parentVC : UIViewController
+    fileprivate var childsVC : [UIViewController]
+    fileprivate var parentVC : UIViewController
     
     var sourceIndex : Int = 0
     var targetIndex : Int = 0
 
     
     // 是否是禁止状态
-    private var isForbidScroll : Bool = false
+    fileprivate var isForbidScroll : Bool = false
     
-    private var startDraggingOffsetX : CGFloat = 0
+    fileprivate var startDraggingOffsetX : CGFloat = 0
     
     weak var delegate : STContentViewDelegate?
     
     // MARK:- 懒加载
-    private lazy var collectionView : UICollectionView = {
+    fileprivate lazy var collectionView : UICollectionView = {
        
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
-        layout.scrollDirection = .Horizontal
+        layout.scrollDirection = .horizontal
         layout.itemSize = CGSize(width: self.bounds.width, height: self.bounds.height)
         
         let collectionView = UICollectionView(frame: self.bounds, collectionViewLayout: layout)
-        collectionView.pagingEnabled = true
+        collectionView.isPagingEnabled = true
         collectionView.bounces = false
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: stContentViewCellIdentifier)
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: stContentViewCellIdentifier)
         return collectionView
         
     }()
@@ -79,15 +79,15 @@ extension STContentView {
     
     func cacheMenuTYpe() {
         // 判断本地是否有用户点击menuType记录
-        guard let cacheIndex = STNSUserDefaults.objectForKey(HOMETYPE) as? Int else { return }
+        guard let cacheIndex = STNSUserDefaults.object(forKey: HOMETYPE) as? Int else { return }
         enumerateIndex(cacheIndex)
 
     }
     
-    func enumerateIndex(index : Int){
+    func enumerateIndex(_ index : Int){
         isForbidScroll = true
-        let indexPath = NSIndexPath(forItem: index, inSection: 0)
-        collectionView.scrollToItemAtIndexPath(indexPath, atScrollPosition: .Left, animated: false)
+        let indexPath = IndexPath(item: index, section: 0)
+        collectionView.scrollToItem(at: indexPath, at: .left, animated: false)
         
     }
 
@@ -96,12 +96,12 @@ extension STContentView {
 // MARK:- 设置UI
 extension STContentView {
     
-    private func stupUI(){
+    fileprivate func stupUI(){
         
         addSubview(collectionView)
         
         // 1 添加子控制器
-        for (_, vc) in childsVC.enumerate(){
+        for (_, vc) in childsVC.enumerated(){
             parentVC.addChildViewController(vc)
         }
     }
@@ -110,14 +110,14 @@ extension STContentView {
 // MARK:- UICollectionViewDataSource
 extension STContentView : UICollectionViewDataSource {
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int{
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int{
         
-        return childsVC.count ?? 0
+        return childsVC.count 
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell{
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell{
         
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(stContentViewCellIdentifier, forIndexPath: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: stContentViewCellIdentifier, for: indexPath)
         
         // 注意:在这里记录startDraggingOffsetX,因为在scrollViewWillBeginDragging记录开始值时,当快速滑动屏幕时候,scrollViewWillBeginDragging方法不调用,下面加上的100是纠正值,是经过我测试发现,快速移动时候,此处拿到的开始值和scrollViewWillBeginDragging里拿到的开始值有差值,最大我发现是80,所以在这里我加上100
 //        let a = Int((collectionView.contentOffset.x) / 320)
@@ -135,25 +135,25 @@ extension STContentView : UICollectionViewDataSource {
 extension STContentView : UICollectionViewDelegate{
     
     // 开始拖拽
-    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         isForbidScroll = false
         startDraggingOffsetX = scrollView.contentOffset.x
     }
     
     
     // 拖动界面 手指离开屏幕会调用此方法
-    func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool){
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool){
         
         if !decelerate{
             contentViewEndScrollView()
         }else{
-            scrollView.scrollEnabled = false
+            scrollView.isScrollEnabled = false
         }
     }
     
     // 已经结束减速
-    func scrollViewDidEndDecelerating(scrollView: UIScrollView){
-        scrollView.scrollEnabled = true
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView){
+        scrollView.isScrollEnabled = true
         contentViewEndScrollView()
         
     }
@@ -167,7 +167,7 @@ extension STContentView : UICollectionViewDelegate{
     }
     
     // 实时滚动监听
-    func scrollViewDidScroll(scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         // 0.判断是否是点击事件
 //        if isForbidScroll { return }
@@ -244,7 +244,6 @@ extension STContentView : UICollectionViewDelegate{
         
         // 2.给targetIndex/progress赋值
         let currentIndex = Int(startDraggingOffsetX / scrollView.bounds.width)
-//        print("ppppppppppppp",startDraggingOffsetX,scrollView.contentOffset.x)
         if startDraggingOffsetX < scrollView.contentOffset.x { // 左滑动
             targetIndex = currentIndex + 1
             if targetIndex > childsVC.count - 1 {
@@ -271,9 +270,9 @@ extension STContentView : UICollectionViewDelegate{
 // MARK:- STTitlesViewDelegate
 extension STContentView : STTitlesViewDelegate {
     
-    func stTitlesView(stTitlesView: STTitlesView, toIndex: Int) {
+    func stTitlesView(_ stTitlesView: STTitlesView, toIndex: Int) {
         isForbidScroll = true
-        let indexPath = NSIndexPath(forItem: toIndex, inSection: 0)
-        collectionView.scrollToItemAtIndexPath(indexPath, atScrollPosition: .Left, animated: false)
+        let indexPath = IndexPath(item: toIndex, section: 0)
+        collectionView.scrollToItem(at: indexPath, at: .left, animated: false)
     }
 }
